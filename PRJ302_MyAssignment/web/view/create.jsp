@@ -1,121 +1,60 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Đơn xin nghỉ phép</title>
+    <title>Create Leave Request</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f2f2f2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
         }
 
-        .form-container {
-            background-color: #ffe5d1;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 25px 30px;
-            width: 360px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        form {
+            width: 400px;
+            margin: auto;
         }
 
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 22px;
-            color: #333;
-        }
-
-        .user-info {
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .user-info strong {
-            font-weight: 600;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
+        label {
+            font-weight: bold;
             display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
+            margin-top: 15px;
         }
 
-        .form-group input[type="date"],
-        .form-group textarea {
+        input, textarea {
             width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
             padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-        }
-
-        .form-group textarea {
-            resize: none;
-            height: 90px;
-        }
-
-        .submit-btn {
-            background-color: #3366cc;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 6px;
-            cursor: pointer;
             width: 100%;
-            transition: background-color 0.3s;
+            cursor: pointer;
         }
 
-        .submit-btn:hover {
-            background-color: #27408b;
+        button:hover {
+            background-color: #45a049;
         }
+
     </style>
 </head>
 <body>
+<h2>Create Leave Request</h2>
+<form action="${pageContext.request.contextPath}/leaverequest/create" method="post">
+    <label for="reason">Reason</label>
+    <textarea name="reason" rows="4" required></textarea>
 
-    <div class="form-container">
-        <h2>Đơn xin nghỉ phép</h2>
+    <label for="from">From Date</label>
+    <input type="date" name="from" required />
 
-        <div class="user-info">
-            <p><strong>User:</strong> ______________________</p>
-            <p><strong>Role:</strong> ______________________</p>
-            <p><strong>Dep:</strong> ______________________</p>
-        </div>
+    <label for="to">To Date</label>
+    <input type="date" name="to" required />
 
-        <form action="submitLeaveRequest" method="POST">
-            <div class="form-group">
-                <label for="start-date">Từ ngày:</label>
-                <input type="date" id="start-date" name="start_date" required>
-            </div>
-
-            <div class="form-group">
-                <label for="end-date">Tới ngày:</label>
-                <input type="date" id="end-date" name="end_date" required>
-            </div>
-
-            <div class="form-group">
-                <label for="reason">Lý do:</label>
-                <textarea id="reason" name="reason" placeholder="Nhập lý do..." required></textarea>
-            </div>
-
-            <button type="submit" class="submit-btn">Gửi</button>
-        </form>
-    </div>
-
+    <button type="submit">Submit</button>
+</form>
 </body>
 </html>
