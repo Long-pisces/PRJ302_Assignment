@@ -39,9 +39,46 @@ public class LeaveRequestDBContext extends DBContext<LeaveRequest> {
     }
 
     @Override
-    public ArrayList<LeaveRequest> list() {
-        throw new UnsupportedOperationException("Not supported yet.");
+public ArrayList<LeaveRequest> list() {
+    ArrayList<LeaveRequest> list = new ArrayList<>();
+    String sql = "SELECT lr.lrid, lr.reason, lr.[from], lr.[to], "
+            + "lr.status, "
+            + "u.displayname AS creator_name, "
+            + "pu.displayname AS processor_name "
+            + "FROM LeaveRequests lr "
+            + "LEFT JOIN Users u ON lr.createdby = u.username "
+            + "LEFT JOIN Users pu ON lr.processedby = pu.username";
+    
+    try {
+        PreparedStatement stm = connection.prepareStatement(sql);
+        ResultSet rs = stm.executeQuery();
+        while (rs.next()) {
+            LeaveRequest lr = new LeaveRequest();
+            lr.setId(rs.getInt("lrid"));
+            lr.setReason(rs.getString("reason"));
+            lr.setFrom(rs.getDate("from"));
+            lr.setTo(rs.getDate("to"));
+            lr.setStatus(rs.getInt("status"));
+
+            // Gán người tạo
+            User creator = new User();
+            creator.setDisplayname(rs.getString("creator_name")); // Có thể null nếu không join được
+            lr.setCreatedBy(creator);
+
+            // Gán người xử lý
+            String processorDisplay = rs.getString("processor_name");
+            lr.setProcessedBy(processorDisplay != null ? processorDisplay : "N/A");
+
+            list.add(lr);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        closeConnection();
     }
+    return list;
+}
+
 
     @Override
     public LeaveRequest get(int id) {
