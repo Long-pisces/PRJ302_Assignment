@@ -14,9 +14,9 @@
     <body>
         <h1>Hello ${sessionScope.user.displayname}</h1>
         <h2>
-            <a href="${pageContext.request.contextPath}/leaverequest/create">Create Form</a><br/>
-            <a href="view/list.jsp">List Form</a><br/>
-            <a href="view/update.jsp">Update Form</a><br/>
+            <a href="${pageContext.request.contextPath}/leaverequest/create">Create Leave Request</a><br/>
+            <a href="${pageContext.request.contextPath}/leaverequest/update">Update Leave Request</a><br/>
+            <a href="view/list.jsp">List Leave Request</a><br/>
         </h2>
     </body>
 </html>
