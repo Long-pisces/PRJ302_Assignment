@@ -39,46 +39,45 @@ public class LeaveRequestDBContext extends DBContext<LeaveRequest> {
     }
 
     @Override
-public ArrayList<LeaveRequest> list() {
-    ArrayList<LeaveRequest> list = new ArrayList<>();
-    String sql = "SELECT lr.lrid, lr.reason, lr.[from], lr.[to], "
-            + "lr.status, "
-            + "u.displayname AS creator_name, "
-            + "pu.displayname AS processor_name "
-            + "FROM LeaveRequests lr "
-            + "LEFT JOIN Users u ON lr.createdby = u.username "
-            + "LEFT JOIN Users pu ON lr.processedby = pu.username";
-    
-    try {
-        PreparedStatement stm = connection.prepareStatement(sql);
-        ResultSet rs = stm.executeQuery();
-        while (rs.next()) {
-            LeaveRequest lr = new LeaveRequest();
-            lr.setId(rs.getInt("lrid"));
-            lr.setReason(rs.getString("reason"));
-            lr.setFrom(rs.getDate("from"));
-            lr.setTo(rs.getDate("to"));
-            lr.setStatus(rs.getInt("status"));
+    public ArrayList<LeaveRequest> list() {
+        ArrayList<LeaveRequest> list = new ArrayList<>();
+        String sql = "SELECT lr.lrid, lr.reason, lr.[from], lr.[to], "
+                + "lr.status, "
+                + "u.displayname AS creator_name, "
+                + "pu.displayname AS processor_name "
+                + "FROM LeaveRequests lr "
+                + "LEFT JOIN Users u ON lr.createdby = u.username "
+                + "LEFT JOIN Users pu ON lr.processedby = pu.username";
 
-            // Gán người tạo
-            User creator = new User();
-            creator.setDisplayname(rs.getString("creator_name")); // Có thể null nếu không join được
-            lr.setCreatedBy(creator);
+        try {
+            PreparedStatement stm = connection.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                LeaveRequest lr = new LeaveRequest();
+                lr.setId(rs.getInt("lrid"));
+                lr.setReason(rs.getString("reason"));
+                lr.setFrom(rs.getDate("from"));
+                lr.setTo(rs.getDate("to"));
+                lr.setStatus(rs.getInt("status"));
 
-            // Gán người xử lý
-            String processorDisplay = rs.getString("processor_name");
-            lr.setProcessedBy(processorDisplay != null ? processorDisplay : "N/A");
+                // Gán người tạo
+                User creator = new User();
+                creator.setDisplayname(rs.getString("creator_name")); // Có thể null nếu không join được
+                lr.setCreatedBy(creator);
 
-            list.add(lr);
+                // Gán người xử lý
+                String processorDisplay = rs.getString("processor_name");
+                lr.setProcessedBy(processorDisplay != null ? processorDisplay : "N/A");
+
+                list.add(lr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
-        closeConnection();
+        return list;
     }
-    return list;
-}
-
 
     @Override
     public LeaveRequest get(int id) {
@@ -126,18 +125,28 @@ public ArrayList<LeaveRequest> list() {
     }
 
     @Override
-    public void delete(LeaveRequest model) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void delete(LeaveRequest lr) {
+        String sql = "DELETE FROM LeaveRequests WHERE lrid = ?";
+        try {
+            PreparedStatement stm = connection.prepareStatement(sql);
+            stm.setInt(1, lr.getId());
+            int rows = stm.executeUpdate();
+            System.out.println("Rows affected: " + rows);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
     }
 
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("==> [DAL] Đã đóng kết nối DB");
+                System.out.println("Đã đóng kết nối DB");
             }
         } catch (SQLException e) {
-            System.out.println("❌ [DAL] Không thể đóng kết nối: " + e.getMessage());
+            System.out.println("Không thể đóng kết nối: " + e.getMessage());
         }
     }
 }
