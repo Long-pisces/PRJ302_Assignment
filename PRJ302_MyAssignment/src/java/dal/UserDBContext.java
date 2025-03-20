@@ -101,36 +101,6 @@ public class UserDBContext extends DBContext<User> {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    //auth
-    // Lấy thông tin user kèm theo role và feature
-    public User getUserWithRolesAndFeatures(String username, String password) {
-        User user = null;
-
-        // Lấy thông tin người dùng từ bảng Users
-        String sqlUser = "SELECT username, password, displayname, eid FROM Users WHERE username = ? AND password = ?";
-        try (Connection conn = this.getConnection(); PreparedStatement stm = conn.prepareStatement(sqlUser)) {
-
-            stm.setString(1, username);
-            stm.setString(2, password);
-            ResultSet rs = stm.executeQuery();
-
-            if (rs.next()) {
-                user = new User();
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setDisplayname(rs.getString("displayname"));
-                user.setEid(rs.getInt("eid"));
-
-                // Lấy các Role của User
-                ArrayList<Role> roles = getRolesForUser(username);
-                user.setRoles(roles);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return user;
-    }
-
     // Lấy các Role của User từ bảng UserRole và Roles
     public ArrayList<Role> getRolesForUser(String username) {
         ArrayList<Role> roles = new ArrayList<>();
@@ -184,25 +154,4 @@ public class UserDBContext extends DBContext<User> {
         }
         return features;
     }
-
-    public boolean isApprovable(String username) {
-        // Get the user with roles and features
-        User user = getUserWithRolesAndFeatures(username, null); // Assume the password is null for this case
-
-        if (user != null) {
-            // Iterate through all roles of the user
-            for (Role role : user.getRoles()) {
-                // Check each feature of the role
-                for (Feature feature : role.getFeatures()) {
-                    // Check if the feature URL matches the /leaverequest/approve
-                    if ("/leaverequest/approve".equals(feature.getUrl())) {
-                        return true; // User has the 'approve' feature
-                    }
-                }
-            }
-        }
-
-        return false; // User doesn't have the 'approve' feature
-    }
-
 }

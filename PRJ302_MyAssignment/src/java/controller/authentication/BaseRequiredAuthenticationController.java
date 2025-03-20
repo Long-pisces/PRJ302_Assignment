@@ -46,7 +46,7 @@ public abstract class BaseRequiredAuthenticationController extends HttpServlet {
             resp.getWriter().println("access denied!");
         }
     }
-
+    //ktra user có quyền truy cập đường dẫn đó hay không
     protected boolean hasAccess(User user, String path) {
         return user.getRoles().stream()
                 .flatMap(role -> role.getFeatures().stream())

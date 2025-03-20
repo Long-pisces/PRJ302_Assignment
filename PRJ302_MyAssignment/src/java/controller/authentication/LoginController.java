@@ -30,12 +30,8 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
     User user = db.get(username, password);
     
     if (user != null) {
-        // Check if the user has the approval access
-        boolean canApprove = db.isApprovable(username); // Check if user has the /leaverequest/approve feature
-
         HttpSession session = req.getSession();
         session.setAttribute("user", user);
-        session.setAttribute("canApprove", canApprove); // Store the flag in the session
 
         //write some cookie
         Cookie c_user = new Cookie("username", username);

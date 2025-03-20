@@ -1,105 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-        /* Import Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - IT Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
 
-        /* Reset CSS */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+    }
 
-        /* Background của trang */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(to right, #667eea, #764ba2);
-        }
+    .login-container {
+      background: #f4f7fa;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      width: 350px;
+    }
 
-        /* Khung chứa form */
-        .login-container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            width: 320px;
-            text-align: center;
-        }
+    .login-container h2 {
+      text-align: center;
+      color: #1e3c72;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
 
-        /* Tiêu đề */
-        .login-container h2 {
-            margin-bottom: 15px;
-            color: #333;
-        }
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
 
-        /* Input fields */
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
+    .input-group label {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 5px;
+      display: block;
+      font-weight: 500;
+    }
 
-        .input-group label {
-            font-weight: 600;
-            font-size: 14px;
-        }
+    .input-group input {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.3s;
+    }
 
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: 0.3s;
-        }
+    .input-group input:focus {
+      border-color: #1e3c72;
+      outline: none;
+    }
 
-        .input-group input:focus {
-            border-color: #667eea;
-            outline: none;
-        }
+    .input-group i {
+      position: absolute;
+      right: 12px;
+      top: 38px;
+      color: #aaa;
+    }
 
-        /* Button login */
-        .login-btn {
-            background: #667eea;
-            color: #fff;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: 0.3s;
-        }
+    .login-btn {
+      background: #1e3c72;
+      color: #fff;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s;
+    }
 
-        .login-btn:hover {
-            background: #764ba2;
-        }
-    </style>
+    .login-btn:hover {
+      background: #16325c;
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    .footer-text a {
+      color: #1e3c72;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <h2>Login</h2>
-        <form action="login" method="POST">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="login-btn">Login</button>
-        </form>
+  <div class="login-container">
+    <h2><i class="fas fa-user-lock"></i> IT Portal Login</h2>
+    <form action="login" method="POST">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <i class="fas fa-lock"></i>
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+    <div class="footer-text">
+      Forgot your password? <a href="#">Reset here</a>
     </div>
+  </div>
 
 </body>
 </html>

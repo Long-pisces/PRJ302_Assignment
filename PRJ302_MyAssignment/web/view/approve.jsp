@@ -7,20 +7,20 @@
         <title>Approve Leave Requests</title>
     </head>
     <body>
-        <h2>Danh sách đơn nghỉ phép chờ phê duyệt</h2>
+        <h2>List of leave requests that are in progress</h2>
 
         <c:if test="${empty leaveRequests}">
-            <p>Không có đơn nghỉ nào đang chờ xử lý.</p>
+            <p>There is no leave request that is in progress.</p>
         </c:if>
 
         <table border="1" cellpadding="8">
             <tr>
                 <th>ID</th>
-                <th>Lý do</th>
-                <th>Từ ngày</th>
-                <th>Đến ngày</th>
-                <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th>Reason</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
             <c:forEach var="lr" items="${leaveRequests}">
                 <tr>
