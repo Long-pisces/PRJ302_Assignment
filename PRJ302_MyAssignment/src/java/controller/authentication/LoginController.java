@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import model.Role;
 import model.User;
 
 /**
@@ -21,27 +23,31 @@ import model.User;
 public class LoginController extends HttpServlet{
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        UserDBContext db = new UserDBContext();
-        User user = db.get(username, password);
-        if(user != null)
-        {
-            HttpSession session = req.getSession();
-            session.setAttribute("user", user);
-            //write some cookie
-            Cookie c_user = new Cookie("username", username);
-            c_user.setMaxAge(3600*24*30*12);
-            resp.addCookie(c_user);
-            resp.sendRedirect("home");
-        }
-        else
-        {
-            resp.getWriter().println("Access denied!");
-        }
+protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    String username = req.getParameter("username");
+    String password = req.getParameter("password");
+    UserDBContext db = new UserDBContext();
+    User user = db.get(username, password);
     
+    if (user != null) {
+        // Check if the user has the approval access
+        boolean canApprove = db.isApprovable(username); // Check if user has the /leaverequest/approve feature
+
+        HttpSession session = req.getSession();
+        session.setAttribute("user", user);
+        session.setAttribute("canApprove", canApprove); // Store the flag in the session
+
+        //write some cookie
+        Cookie c_user = new Cookie("username", username);
+        c_user.setMaxAge(3600 * 24 * 30 * 12);
+        resp.addCookie(c_user);
+        
+        resp.sendRedirect("home");
+    } else {
+        resp.getWriter().println("Access denied!");
     }
+}
+
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

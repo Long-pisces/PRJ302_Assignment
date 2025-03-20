@@ -7,16 +7,24 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.*;
 import java.sql.Date;
 import model.LeaveRequest;
 import model.User;
-import java.sql.*;
+
 @WebServlet(name = "LeaveRequestUpdateController", urlPatterns = {"/leaverequest/update"})
 public class LeaveRequestUpdateController extends BaseRequiredAuthenticationController {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp, User user)
             throws ServletException, IOException {
+
+        if (!hasAccess(user, req.getServletPath())) {
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().println("<h2 style='color:red;'>Bạn không có quyền truy cập chức năng này.</h2>");
+            return;
+        }
+
         LeaveRequestDBContext db = new LeaveRequestDBContext();
         int latestId = -1;
 
@@ -33,7 +41,7 @@ public class LeaveRequestUpdateController extends BaseRequiredAuthenticationCont
         }
 
         if (latestId != -1) {
-            LeaveRequest lr = db.get(latestId); 
+            LeaveRequest lr = db.get(latestId);
             req.setAttribute("lr", lr);
             req.getRequestDispatcher("/view/update.jsp").forward(req, resp);
         } else {
@@ -44,19 +52,24 @@ public class LeaveRequestUpdateController extends BaseRequiredAuthenticationCont
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp, User user)
             throws ServletException, IOException {
+
+        if (!hasAccess(user, req.getServletPath())) {
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().println("<h2 style='color:red;'>Bạn không có quyền truy cập chức năng này.</h2>");
+            return;
+        }
+
         int lrid = Integer.parseInt(req.getParameter("lrid"));
         String action = req.getParameter("action");
 
         LeaveRequestDBContext db = new LeaveRequestDBContext();
 
-        // Nếu người dùng muốn xóa đơn nghỉ phép
         if ("delete".equals(action)) {
             LeaveRequest lr = new LeaveRequest();
             lr.setId(lrid);
-            db.delete(lr);  // Xóa đơn nghỉ phép
+            db.delete(lr);
             resp.sendRedirect("../home");
-        } else { 
-            // Nếu người dùng chỉ muốn cập nhật
+        } else {
             String reason = req.getParameter("reason");
             Date from = Date.valueOf(req.getParameter("from"));
             Date to = Date.valueOf(req.getParameter("to"));

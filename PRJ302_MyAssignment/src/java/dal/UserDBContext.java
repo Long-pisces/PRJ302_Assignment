@@ -1,5 +1,6 @@
 package dal;
 
+import jakarta.servlet.http.HttpSession;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -99,4 +100,109 @@ public class UserDBContext extends DBContext<User> {
     public void delete(User model) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    //auth
+    // Lấy thông tin user kèm theo role và feature
+    public User getUserWithRolesAndFeatures(String username, String password) {
+        User user = null;
+
+        // Lấy thông tin người dùng từ bảng Users
+        String sqlUser = "SELECT username, password, displayname, eid FROM Users WHERE username = ? AND password = ?";
+        try (Connection conn = this.getConnection(); PreparedStatement stm = conn.prepareStatement(sqlUser)) {
+
+            stm.setString(1, username);
+            stm.setString(2, password);
+            ResultSet rs = stm.executeQuery();
+
+            if (rs.next()) {
+                user = new User();
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setDisplayname(rs.getString("displayname"));
+                user.setEid(rs.getInt("eid"));
+
+                // Lấy các Role của User
+                ArrayList<Role> roles = getRolesForUser(username);
+                user.setRoles(roles);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    // Lấy các Role của User từ bảng UserRole và Roles
+    public ArrayList<Role> getRolesForUser(String username) {
+        ArrayList<Role> roles = new ArrayList<>();
+        String sqlRoles = "SELECT r.rid, r.rname FROM Roles r "
+                + "JOIN UserRole ur ON ur.rid = r.rid "
+                + "WHERE ur.username = ?";
+
+        try (Connection conn = this.getConnection(); PreparedStatement stm = conn.prepareStatement(sqlRoles)) {
+
+            stm.setString(1, username);
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Role role = new Role();
+                role.setId(rs.getInt("rid"));
+                role.setName(rs.getString("rname"));
+
+                // Lấy các Feature của Role từ bảng RoleFeature và Features
+                ArrayList<Feature> features = getFeaturesForRole(role.getId());
+                role.setFeatures(features);
+
+                roles.add(role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return roles;
+    }
+
+    // Lấy các Feature của Role từ bảng RoleFeature và Features
+    // Lấy các Feature của Role từ bảng RoleFeature và Features
+    public ArrayList<Feature> getFeaturesForRole(int roleId) {
+        ArrayList<Feature> features = new ArrayList<>();
+        String sqlFeatures = "SELECT f.fid, f.url FROM Features f "
+                + "JOIN RoleFeature rf ON rf.fid = f.fid "
+                + "WHERE rf.rid = ?";
+
+        try (Connection conn = this.getConnection(); PreparedStatement stm = conn.prepareStatement(sqlFeatures)) {
+
+            stm.setInt(1, roleId);  // Set the role ID to filter features based on the role
+            ResultSet rs = stm.executeQuery();
+
+            while (rs.next()) {
+                Feature feature = new Feature();
+                feature.setId(rs.getInt("fid"));
+                feature.setUrl(rs.getString("url"));
+                features.add(feature); // Add the feature to the list
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();  // Log the exception if any
+        }
+        return features;
+    }
+
+    public boolean isApprovable(String username) {
+        // Get the user with roles and features
+        User user = getUserWithRolesAndFeatures(username, null); // Assume the password is null for this case
+
+        if (user != null) {
+            // Iterate through all roles of the user
+            for (Role role : user.getRoles()) {
+                // Check each feature of the role
+                for (Feature feature : role.getFeatures()) {
+                    // Check if the feature URL matches the /leaverequest/approve
+                    if ("/leaverequest/approve".equals(feature.getUrl())) {
+                        return true; // User has the 'approve' feature
+                    }
+                }
+            }
+        }
+
+        return false; // User doesn't have the 'approve' feature
+    }
+
 }

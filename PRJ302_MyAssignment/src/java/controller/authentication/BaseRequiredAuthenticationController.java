@@ -4,7 +4,6 @@
  */
 package controller.authentication;
 
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +16,7 @@ import model.User;
  * @author sonnt-local
  */
 public abstract class BaseRequiredAuthenticationController extends HttpServlet {
-
+    //Xác định ai đang đăng nhập
     private User getLoggedUser(HttpServletRequest req) {
         return (User) req.getSession().getAttribute("user");
     }
@@ -46,6 +45,12 @@ public abstract class BaseRequiredAuthenticationController extends HttpServlet {
         } else {
             resp.getWriter().println("access denied!");
         }
+    }
+
+    protected boolean hasAccess(User user, String path) {
+        return user.getRoles().stream()
+                .flatMap(role -> role.getFeatures().stream())
+                .anyMatch(feature -> feature.getUrl().equals(path));
     }
 
 }

@@ -149,4 +149,39 @@ public class LeaveRequestDBContext extends DBContext<LeaveRequest> {
             System.out.println("Không thể đóng kết nối: " + e.getMessage());
         }
     }
+    
+    
+    public ArrayList<LeaveRequest> getLeaveRequestsInProgress() {
+        ArrayList<LeaveRequest> leaveRequests = new ArrayList<>();
+        String sql = "SELECT * FROM LeaveRequests WHERE status = 0"; // 0 = In Progress
+        try (Connection conn = this.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                LeaveRequest lr = new LeaveRequest();
+                lr.setId(rs.getInt("lrid"));
+                lr.setReason(rs.getString("reason"));
+                lr.setFrom(rs.getDate("from"));
+                lr.setTo(rs.getDate("to"));
+                lr.setStatus(rs.getInt("status"));
+                // Add other fields as needed
+                leaveRequests.add(lr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return leaveRequests;
+    }
+
+    // Update status of a leave request
+    public void updateLeaveRequestStatus(int lrid, int status, String processedBy) {
+        String sql = "UPDATE LeaveRequests SET status = ?, processedby = ?, createddate = GETDATE() WHERE lrid = ?";
+        try (Connection conn = this.getConnection(); PreparedStatement stm = conn.prepareStatement(sql)) {
+            stm.setInt(1, status); // 1 = Approved, 2 = Rejected
+            stm.setString(2, processedBy);
+            stm.setInt(3, lrid);
+            stm.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

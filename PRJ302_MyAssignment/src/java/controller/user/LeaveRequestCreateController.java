@@ -7,15 +7,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import model.Employee;
 import model.LeaveRequest;
 import model.User;
+
+import java.io.IOException;
+import java.sql.*;
+import java.sql.Date;
 
 @WebServlet(name = "LeaveRequestCreateController", urlPatterns = {"/leaverequest/create"})
 public class LeaveRequestCreateController extends BaseRequiredAuthenticationController {
@@ -23,29 +21,42 @@ public class LeaveRequestCreateController extends BaseRequiredAuthenticationCont
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp, User user)
             throws ServletException, IOException {
+
+        if (!hasAccess(user, req.getServletPath())) {
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().println("<h2 style='color:red;'>Bạn không có quyền truy cập trang này.</h2>");
+            return;
+        }
+
         req.getRequestDispatcher("/view/create.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp, User user)
             throws ServletException, IOException {
+
+        if (!hasAccess(user, req.getServletPath())) {
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().println("<h2 style='color:red;'>Bạn không có quyền truy cập trang này.</h2>");
+            return;
+        }
+
         String reason = req.getParameter("reason");
         Date from = Date.valueOf(req.getParameter("from"));
         Date to = Date.valueOf(req.getParameter("to"));
 
-        // Tìm người có role là "Manager"
         String managerUsername = getFirstManagerUsername();
 
         LeaveRequest lr = new LeaveRequest();
         lr.setReason(reason);
         lr.setFrom(from);
         lr.setTo(to);
-        lr.setStatus(0); // "In Progress"
+        lr.setStatus(0); // In Progress
         lr.setCreatedBy(user);
         lr.setProcessedBy(managerUsername);
 
         Employee emp = new Employee();
-        emp.setId(user.getEid()); // owner_eid
+        emp.setId(user.getEid());
         lr.setOwner(emp);
 
         LeaveRequestDBContext db = new LeaveRequestDBContext();
@@ -67,7 +78,7 @@ public class LeaveRequestCreateController extends BaseRequiredAuthenticationCont
                 return rs.getString("username");
             }
         } catch (SQLException e) {
-            System.out.println("❌ Lỗi lấy username Manager: " + e.getMessage());
+            System.out.println("❌ Lỗi lấy Manager: " + e.getMessage());
         }
         return null;
     }

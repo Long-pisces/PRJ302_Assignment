@@ -17,10 +17,17 @@ public class LeaveRequestListController extends BaseRequiredAuthenticationContro
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp, User user)
             throws ServletException, IOException {
+
+        if (!hasAccess(user, req.getServletPath())) {
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().println("<h2 style='color:red;'>Bạn không có quyền truy cập chức năng này.</h2>");
+            return;
+        }
+
         LeaveRequestDBContext db = new LeaveRequestDBContext();
-        ArrayList<LeaveRequest> list = db.list();   // Lấy toàn bộ đơn
-        req.setAttribute("list", list);             // Gán cho request
-        req.getRequestDispatcher("/view/list.jsp").forward(req, resp); // Chuyển tiếp đến JSP
+        ArrayList<LeaveRequest> list = db.list();
+        req.setAttribute("list", list);
+        req.getRequestDispatcher("/view/list.jsp").forward(req, resp);
     }
 
     @Override
@@ -29,4 +36,3 @@ public class LeaveRequestListController extends BaseRequiredAuthenticationContro
         doGet(req, resp, user);
     }
 }
-
