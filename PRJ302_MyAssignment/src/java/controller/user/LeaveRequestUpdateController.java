@@ -27,7 +27,8 @@ public class LeaveRequestUpdateController extends BaseRequiredAuthenticationCont
 
         LeaveRequestDBContext db = new LeaveRequestDBContext();
         int latestId = -1;
-
+        
+        // lấy ra request gần nhất mà user tạo ra
         try {
             String sql = "SELECT TOP 1 lrid FROM LeaveRequests WHERE createdby = ? ORDER BY createddate DESC";
             PreparedStatement stm = db.getConnection().prepareStatement(sql);
