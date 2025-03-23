@@ -149,8 +149,7 @@ public class LeaveRequestDBContext extends DBContext<LeaveRequest> {
             System.out.println("Không thể đóng kết nối: " + e.getMessage());
         }
     }
-    
-    
+
     public ArrayList<LeaveRequest> getLeaveRequestsInProgress() {
         ArrayList<LeaveRequest> leaveRequests = new ArrayList<>();
         String sql = "SELECT * FROM LeaveRequests WHERE status = 0"; // 0 = In Progress
@@ -184,4 +183,28 @@ public class LeaveRequestDBContext extends DBContext<LeaveRequest> {
             e.printStackTrace();
         }
     }
+
+    public ArrayList<LeaveRequest> getApprovedLeavesBetween(Date start, Date end) {
+        ArrayList<LeaveRequest> list = new ArrayList<>();
+        String sql = "SELECT * FROM LeaveRequests WHERE status = 1 AND [from] <= ? AND [to] >= ?";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setDate(1, end);
+            stm.setDate(2, start);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                LeaveRequest lr = new LeaveRequest();
+                lr.setId(rs.getInt("lrid"));
+                lr.setFrom(rs.getDate("from"));
+                lr.setTo(rs.getDate("to"));
+                Employee e = new Employee();
+                e.setId(rs.getInt("owner_eid"));
+                lr.setOwner(e);
+                list.add(lr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

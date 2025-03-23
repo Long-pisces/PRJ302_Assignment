@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Employee;
 import model.Feature;
 import model.Role;
 import model.User;
@@ -154,4 +155,21 @@ public class UserDBContext extends DBContext<User> {
         }
         return features;
     }
+
+    public ArrayList<Employee> getAllEmployees() {
+        ArrayList<Employee> list = new ArrayList<>();
+        String sql = "SELECT eid, ename FROM Employees";
+        try (PreparedStatement stm = connection.prepareStatement(sql); ResultSet rs = stm.executeQuery()) {
+            while (rs.next()) {
+                Employee emp = new Employee();
+                emp.setId(rs.getInt("eid"));
+                emp.setName(rs.getString("ename"));
+                list.add(emp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

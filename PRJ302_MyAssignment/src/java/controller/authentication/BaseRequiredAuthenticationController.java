@@ -16,6 +16,7 @@ import model.User;
  * @author sonnt-local
  */
 public abstract class BaseRequiredAuthenticationController extends HttpServlet {
+
     //Xác định ai đang đăng nhập
     private User getLoggedUser(HttpServletRequest req) {
         return (User) req.getSession().getAttribute("user");
@@ -46,6 +47,7 @@ public abstract class BaseRequiredAuthenticationController extends HttpServlet {
             resp.getWriter().println("access denied!");
         }
     }
+
     //ktra user có quyền truy cập đường dẫn đó hay không
     protected boolean hasAccess(User user, String path) {
         return user.getRoles().stream()

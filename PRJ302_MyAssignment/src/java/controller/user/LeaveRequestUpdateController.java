@@ -45,7 +45,8 @@ public class LeaveRequestUpdateController extends BaseRequiredAuthenticationCont
             req.setAttribute("lr", lr);
             req.getRequestDispatcher("/view/update.jsp").forward(req, resp);
         } else {
-            resp.getWriter().println("❗Bạn chưa tạo đơn nghỉ phép nào để cập nhật.");
+            resp.setContentType("text/html;charset=UTF-8");
+            resp.getWriter().println("<h2 style='color:red;'>You have no leave request to update.</h2>");
         }
     }
 
